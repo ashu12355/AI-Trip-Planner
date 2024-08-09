@@ -1,35 +1,36 @@
-const {
-    GoogleGenerativeAI,
-    HarmCategory,
-    HarmBlockThreshold,
-  } = require("@google/generative-ai");
-  
-  const apiKey = process.env.GEMINI_API_KEY;
-  const genAI = new GoogleGenerativeAI(apiKey);
-  
-  const model = genAI.getGenerativeModel({
-    model: "gemini-1.5-pro",
+import { GoogleGenerativeAI } from "@google/generative-ai";
+
+
+const apiKey = "AIzaSyCX3MYY10lxibdaAlnwj0wn1uApyVHg9E0";
+const genAI = new GoogleGenerativeAI(apiKey);
+
+const model = genAI.getGenerativeModel({
+  model: "gemini-1.5-flash",
+});
+
+const generationConfig = {
+  temperature: 1,
+  topP: 0.95,
+  topK: 64,
+  maxOutputTokens: 8192,
+  responseMimeType: "application/json",
+};
+
+
+export const chatSession = model.startChat({
+    generationConfig,
+    history: [
+      {
+        role: "user",
+        parts: [
+          {text: "Generate Travel Plan for Location: Las Vegas, for 3 Days for Couple with a Cheap budget, Give me a Hotels options list with HotelName, Hotel address, Price, hotel image url, geo coordinates, rating, descriptions and suggest itinerary with placeName, Place Details, Place Image Url, Geo Coordinates, ticket Pricing, rating, Time travel each of the location for 3 days with each day plan with best time to visit in JSON format."},
+        ],
+      },
+      {
+        role: "model",
+        parts: [
+          {text: "```json\n{\n  \"hotelOptions\": [\n    {\n      \"hotelName\": \"The D Las Vegas\",\n      \"hotelAddress\": \"301 Fremont Street, Las Vegas, NV 89101\",\n      \"price\": \"$50 - $100 per night\",\n      \"hotelImageUrl\": \"https://www.the-d.com/assets/images/gallery/hero-images/hero-downtown-las-vegas-strip.jpg\",\n      \"geoCoordinates\": \"36.1699, -115.1423\",\n      \"rating\": 4.0,\n      \"description\": \"A budget-friendly hotel located in the heart of Fremont Street Experience. Offers a casino, restaurants, and live entertainment.\"\n    },\n    {\n      \"hotelName\": \"Golden Nugget Las Vegas\",\n      \"hotelAddress\": \"129 E Fremont Street, Las Vegas, NV 89101\",\n      \"price\": \"$75 - $150 per night\",\n      \"hotelImageUrl\": \"https://www.goldennugget.com/las-vegas/media/images/hero-golden-nugget-las-vegas.jpg\",\n      \"geoCoordinates\": \"36.1697, -115.1429\",\n      \"rating\": 4.5,\n      \"description\": \"A historic hotel with a casino, pool, and a variety of dining options. Known for its famous shark tank.\"\n    },\n    {\n      \"hotelName\": \"Plaza Hotel & Casino\",\n      \"hotelAddress\": \"1 Main Street, Las Vegas, NV 89101\",\n      \"price\": \"$60 - $120 per night\",\n      \"hotelImageUrl\": \"https://www.plazahotelcasino.com/media/img/hero_banner_desktop.jpg\",\n      \"geoCoordinates\": \"36.1700, -115.1419\",\n      \"rating\": 4.0,\n      \"description\": \"A classic hotel on Fremont Street with a casino, dining, and entertainment options. Offers a rooftop pool with views of the city.\"\n    }\n  ],\n  \"itinerary\": [\n    {\n      \"day\": 1,\n      \"dayPlan\": [\n        {\n          \"time\": \"9:00 AM - 12:00 PM\",\n          \"placeName\": \"Fremont Street Experience\",\n          \"placeDetails\": \"A pedestrian mall with a canopy of lights, live entertainment, and street performers.\",\n          \"placeImageUrl\": \"https://www.vegasexperience.com/media/images/freemont-street-experience-header.jpg\",\n          \"geoCoordinates\": \"36.1699, -115.1422\",\n          \"ticketPricing\": \"Free\",\n          \"rating\": 4.5\n        },\n        {\n          \"time\": \"12:00 PM - 1:30 PM\",\n          \"placeName\": \"Heart Attack Grill\",\n          \"placeDetails\": \"A unique restaurant known for its calorie-laden burgers and 'bypass burgers'.\",\n          \"placeImageUrl\": \"https://www.heartattackgrill.com/images/website-images/locations/las-vegas/exterior-heart-attack-grill-las-vegas.jpg\",\n          \"geoCoordinates\": \"36.1702, -115.1419\",\n          \"ticketPricing\": \"N/A\",\n          \"rating\": 3.5\n        },\n        {\n          \"time\": \"2:00 PM - 5:00 PM\",\n          \"placeName\": \"Neon Museum\",\n          \"placeDetails\": \"A museum dedicated to preserving and displaying iconic Las Vegas neon signs.\",\n          \"placeImageUrl\": \"https://www.neonmuseum.org/wp-content/uploads/2018/06/Neon-Museum-Main-Entrance-5.jpg\",\n          \"geoCoordinates\": \"36.1644, -115.1507\",\n          \"ticketPricing\": \"$20\",\n          \"rating\": 4.5\n        },\n        {\n          \"time\": \"5:30 PM - 7:00 PM\",\n          \"placeName\": \"Golden Gate Hotel & Casino\",\n          \"placeDetails\": \"A historic hotel with a casino and a variety of dining options. Enjoy a happy hour drink or dinner.\",\n          \"placeImageUrl\": \"https://www.goldengatehotelcasino.com/media/images/hero-golden-gate-hotel-casino.jpg\",\n          \"geoCoordinates\": \"36.1703, -115.1418\",\n          \"ticketPricing\": \"N/A\",\n          \"rating\": 4.0\n        },\n        {\n          \"time\": \"8:00 PM - 10:00 PM\",\n          \"placeName\": \"Free Show at Fremont Street Experience\",\n          \"placeDetails\": \"Enjoy the dazzling light show and live music on Fremont Street.\",\n          \"placeImageUrl\": \"https://www.vegasexperience.com/media/images/freemont-street-experience-header.jpg\",\n          \"geoCoordinates\": \"36.1699, -115.1422\",\n          \"ticketPricing\": \"Free\",\n          \"rating\": 4.5\n        }\n      ]\n    },\n    {\n      \"day\": 2,\n      \"dayPlan\": [\n        {\n          \"time\": \"10:00 AM - 12:00 PM\",\n          \"placeName\": \"The Strip\",\n          \"placeDetails\": \"Explore the famous Las Vegas Strip with its iconic hotels, casinos, and attractions.\",\n          \"placeImageUrl\": \"https://www.visitlasvegas.com/sites/default/files/styles/hero/public/2021-04/IMG_4584.jpg?itok=J6c98_lC\",\n          \"geoCoordinates\": \"36.1146, -115.1729\",\n          \"ticketPricing\": \"N/A\",\n          \"rating\": 5.0\n        },\n        {\n          \"time\": \"12:00 PM - 2:00 PM\",\n          \"placeName\": \"In-N-Out Burger\",\n          \"placeDetails\": \"Enjoy a classic West Coast burger at a popular fast-food chain.\",\n          \"placeImageUrl\": \"https://www.in-n-out.com/images/home/hero-desktop.jpg\",\n          \"geoCoordinates\": \"36.1151, -115.1727\",\n          \"ticketPricing\": \"N/A\",\n          \"rating\": 4.0\n        },\n        {\n          \"time\": \"2:30 PM - 4:30 PM\",\n          \"placeName\": \"Bellagio Conservatory & Botanical Garden\",\n          \"placeDetails\": \"A free attraction featuring a stunning display of flowers, plants, and sculptures.\",\n          \"placeImageUrl\": \"https://www.bellagio.com/content/dam/bellagio/en/conservatory/2023-autumn-conservatory-1.jpg\",\n          \"geoCoordinates\": \"36.1145, -115.1720\",\n          \"ticketPricing\": \"Free\",\n          \"rating\": 4.5\n        },\n        {\n          \"time\": \"5:00 PM - 7:00 PM\",\n          \"placeName\": \"Fountains of Bellagio\",\n          \"placeDetails\": \"Enjoy a free water and light show synchronized to music.\",\n          \"placeImageUrl\": \"https://www.bellagio.com/content/dam/bellagio/en/fountains/fountains-show.jpg\",\n          \"geoCoordinates\": \"36.1145, -115.1720\",\n          \"ticketPricing\": \"Free\",\n          \"rating\": 5.0\n        },\n        {\n          \"time\": \"7:30 PM - 10:00 PM\",\n          \"placeName\": \"Free Show at Caesars Palace\",\n          \"placeDetails\": \"Enjoy a free show at the Colosseum at Caesars Palace, featuring various performers.\"\n          \"placeImageUrl\": \"https://www.caesars.com/content/dam/caesars-entertainment/caesars-palace/hero/2019-09-hero-colosseum.jpg\",\n          \"geoCoordinates\": \"36.1143, -115.1722\",\n          \"ticketPricing\": \"Free\",\n          \"rating\": 4.0\n        }\n      ]\n    },\n    {\n      \"day\": 3,\n      \"dayPlan\": [\n        {\n          \"time\": \"9:00 AM - 11:00 AM\",\n          \"placeName\": \"Hoover Dam\",\n          \"placeDetails\": \"Take a day trip to the iconic Hoover Dam, a marvel of engineering.\",\n          \"placeImageUrl\": \"https://www.nps.gov/hove/learn/nature/hooverdam.htm\",\n          \"geoCoordinates\": \"36.0046, -114.9767\",\n          \"ticketPricing\": \"$30\",\n          \"rating\": 4.5\n        },\n        {\n          \"time\": \"11:30 AM - 1:30 PM\",\n          \"placeName\": \"Lake Mead\",\n          \"placeDetails\": \"Enjoy the scenic beauty of Lake Mead, the largest reservoir in the United States.\",\n          \"placeImageUrl\": \"https://www.nps.gov/lake/learn/nature/lakemead.htm\",\n          \"geoCoordinates\": \"36.0029, -114.9813\",\n          \"ticketPricing\": \"N/A\",\n          \"rating\": 4.0\n        },\n        {\n          \"time\": \"2:00 PM - 5:00 PM\",\n          \"placeName\": \"Red Rock Canyon National Conservation Area\",\n          \"placeDetails\": \"Explore the scenic beauty of Red Rock Canyon, a popular destination for hiking and rock climbing.\",\n          \"placeImageUrl\": \"https://www.nps.gov/redr/planyourvisit/basicinfo.htm\",\n          \"geoCoordinates\": \"36.0598, -115.2829\",\n          \"ticketPricing\": \"$15\",\n          \"rating\": 4.5\n        },\n        {\n          \"time\": \"6:00 PM - 8:00 PM\",\n          \"placeName\": \"Downtown Container Park\",\n          \"placeDetails\": \"A unique shopping and entertainment center housed in shipping containers.\",\n          \"placeImageUrl\": \"https://www.downtowncontainerpark.com/wp-content/uploads/2020/09/image-24.jpg\",\n          \"geoCoordinates\": \"36.1709, -115.1425\",\n          \"ticketPricing\": \"N/A\",\n          \"rating\": 4.0\n        }\n      ]\n    }\n  ]\n}\n```\n\n**Note:**\n\n* Prices are approximate and may vary depending on the time of year and availability.\n* This itinerary is just a suggestion, and you can customize it to fit your interests and budget.\n* Be sure to check the websites of the attractions and hotels for the latest information on hours, prices, and availability.\n* Consider using public transportation or ride-sharing services to get around Las Vegas, as parking can be expensive.\n* Pack comfortable shoes and clothing, as you will be doing a lot of walking.\n* Don't forget to stay hydrated, especially in the summer months.\n* Most importantly, have fun!\n"},
+        ],
+      },
+    ],
   });
-  
-  const generationConfig = {
-    temperature: 1,
-    topP: 0.95,
-    topK: 64,
-    maxOutputTokens: 8192,
-    responseMimeType: "text/plain",
-  };
-  
-  async function run() {
-    const chatSession = model.startChat({
-      generationConfig,
-   // safetySettings: Adjust safety settings
-   // See https://ai.google.dev/gemini-api/docs/safety-settings
-      history: [
-      ],
-    });
-  
-    const result = await chatSession.sendMessage("INSERT_INPUT_HERE");
-    console.log(result.response.text());
-  }
-  
-  run();

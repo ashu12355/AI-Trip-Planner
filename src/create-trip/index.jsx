@@ -1,8 +1,12 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Input } from "@/components/ui/input";
-import { SelectBudgetOptions, SelectTravelList } from "@/constants/option";
+import { AI_PROMPT, SelectBudgetOptions, SelectTravelList } from "@/constants/option";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner"
+import { ChatSession } from "@google/generative-ai";
+import { chatSession } from "@/service/AIModal";
+
 
 function CreateTrip() {
   const [query, setQuery] = useState("");
@@ -21,13 +25,28 @@ function CreateTrip() {
     console.log(formData); // Log the form data for debugging
   }, [formData]);
 
-  const OnGenerateTrip=()=>{
-    if(formData?.noOfDays>5)
+  const OnGenerateTrip = async () =>{
+    if(formData?.noOfDays>5&&!formData?.location||!formData?.budget||!formData?.traveller)
       {
+        toast("Kidly Enter All The Details.")
           return;
     }
-    console.log(formData)
+
+    const FINAL_PROMPT = AI_PROMPT
+    .replace('{location}',
+    `${formData?.location?.address.name}, ${formData?.location?.address.state}, ${formData?.location?.address.country}`)
+    .replace('{totalDays}',formData?.noOfDays)
+    .replace('{traveller}',formData?.traveller)
+    .replace('{budget}',formData?.budget)
+    .replace('{totalDays}',formData?.noOfDays)
+    console.log(FINAL_PROMPT);
+    
+      const result = await chatSession.sendMessage(FINAL_PROMPT)
+      console.log(result?.response?.text());
+      
+    
   }
+
 
   const handleSearch = async (input) => {
     setQuery(input);
