@@ -1,21 +1,33 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { Input } from "@/components/ui/input";
-import { AI_PROMPT, SelectBudgetOptions, SelectTravelList } from "@/constants/option";
+import {
+  AI_PROMPT,
+  SelectBudgetOptions,
+  SelectTravelList,
+} from "@/constants/option";
 import { Button } from "@/components/ui/button";
-import { toast } from "sonner"
+import { toast } from "sonner";
 import { ChatSession } from "@google/generative-ai";
 import { chatSession } from "@/service/AIModal";
-
-
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { FcGoogle } from "react-icons/fc";
+import { useGoogleLogin } from "@react-oauth/google";
 function CreateTrip() {
   const [query, setQuery] = useState("");
   const [place, setPlace] = useState(null);
   const [suggestions, setSuggestions] = useState([]);
   const [formData, setFormData] = useState({});
+  const [openDialog, setOpenDialog] = useState(false);
 
   const handleInputChange = (name, value) => {
-
     setFormData({
       ...formData,
       [name]: value,
@@ -25,28 +37,55 @@ function CreateTrip() {
     console.log(formData); // Log the form data for debugging
   }, [formData]);
 
-  const OnGenerateTrip = async () =>{
-    if(formData?.noOfDays>5&&!formData?.location||!formData?.budget||!formData?.traveller)
-      {
-        toast("Kidly Enter All The Details.")
-          return;
+    const login = useGoogleLogin({
+      onSuccess:(codeResp)=>console.log(codeResp),
+      onError:(error)=>console.log(error)
+    })
+
+  const OnGenerateTrip = async () => {
+    const user = localStorage.getItem('user');
+
+    if (!user) {
+      setOpenDialog(true);
+      return;
+    }
+    if (
+      (formData?.noOfDays > 5 && !formData?.location) ||
+      !formData?.budget ||
+      !formData?.traveller
+    ) {
+      toast("Kidly Enter All The Details.");
+      return;
     }
 
-    const FINAL_PROMPT = AI_PROMPT
-    .replace('{location}',
-    `${formData?.location?.address.name}, ${formData?.location?.address.state}, ${formData?.location?.address.country}`)
-    .replace('{totalDays}',formData?.noOfDays)
-    .replace('{traveller}',formData?.traveller)
-    .replace('{budget}',formData?.budget)
-    .replace('{totalDays}',formData?.noOfDays)
+    const FINAL_PROMPT = AI_PROMPT.replace(
+      "{location}",
+      `${formData?.location?.address.name}, ${formData?.location?.address.state}, ${formData?.location?.address.country}`
+    )
+      .replace("{totalDays}", formData?.noOfDays)
+      .replace("{traveller}", formData?.traveller)
+      .replace("{budget}", formData?.budget)
+      .replace("{totalDays}", formData?.noOfDays);
     console.log(FINAL_PROMPT);
-    
-      const result = await chatSession.sendMessage(FINAL_PROMPT)
-      console.log(result?.response?.text());
-      
-    
-  }
 
+    const result = await chatSession.sendMessage(FINAL_PROMPT);
+    console.log(result?.response?.text());
+  };
+
+  const GetUserProfile=(tokenInfo)=>{
+    axios.get(`https://www.googleapis.com/oauth2/v1/userinfo?access_token=${tokenInfo?.access_token}`,{
+      headers:{
+        Authorization:`Bearer ${tokenInfo?.access_token}`,
+        Accept:'Application/json'
+      }
+    }).then((resp)=>{
+      console.log(resp);
+      
+    })
+  }
+  
+    
+   
 
   const handleSearch = async (input) => {
     setQuery(input);
@@ -79,13 +118,12 @@ function CreateTrip() {
     handleInputChange("location", suggestion);
   };
 
- 
-
   return (
     <div className="sm:px-10 md:px-32 lg:px-56 xl:px-72 px-5 mt-10">
       <h2 className="font-bold text-3xl">Share Your Travel Preferences</h2>
       <p className="mt-3 text-gray-500 text-xl">
-        Provide some essential information, and our trip planner will create a personalized itinerary based on your choices.
+        Provide some essential information, and our trip planner will create a
+        personalized itinerary based on your choices.
       </p>
       <div className="mt-20 flex flex-col gap-10">
         <div>
@@ -116,20 +154,26 @@ function CreateTrip() {
             <h2 className="text-xl my-3 font-medium">
               How many days do you plan to travel?
             </h2>
-            <Input placeholder={"E.g. 3"} type="number" 
-            onChange={(e)=>handleInputChange('noOfDays',e.target.value)}
+            <Input
+              placeholder={"E.g. 3"}
+              type="number"
+              onChange={(e) => handleInputChange("noOfDays", e.target.value)}
             />
           </div>
           {/* Budget Cards */}
           <div>
-            <h2 className="text-xl my-3 font-medium">What is your budget range?</h2>
+            <h2 className="text-xl my-3 font-medium">
+              What is your budget range?
+            </h2>
             <div className="grid grid-cols-3 gap-5 mt-5">
               {SelectBudgetOptions.map((item, index) => (
                 <div
                   key={index}
-                  onClick={()=>handleInputChange('budget',item.title)}
+                  onClick={() => handleInputChange("budget", item.title)}
                   className={`p-4 border cursor-pointer rounded-lg hover:shadow-lg 
-                    ${formData?.budget==item.title&&'shadow-lg border-black'}  `}
+                    ${
+                      formData?.budget == item.title && "shadow-lg border-black"
+                    }  `}
                 >
                   <h2 className="text-4xl">{item.icon}</h2>
                   <h2 className="font-bold text-lg">{item.title}</h2>
@@ -140,15 +184,20 @@ function CreateTrip() {
           </div>
           {/* Traveler Occupancy */}
           <div>
-            <h2 className="text-xl my-3 font-medium">Who will you be traveling with?</h2>
+            <h2 className="text-xl my-3 font-medium">
+              Who will you be traveling with?
+            </h2>
 
             <div className="grid grid-cols-3 gap-5 mt-5">
               {SelectTravelList.map((item, index) => (
                 <div
                   key={index}
-                  onClick={()=>handleInputChange('traveller',item.people)}
+                  onClick={() => handleInputChange("traveller", item.people)}
                   className={`p-4 border cursor-pointer rounded-lg hover:shadow-lg 
-                    ${formData?.traveller==item.people&&'shadow-lg border-black'}  `}
+                    ${
+                      formData?.traveller == item.people &&
+                      "shadow-lg border-black"
+                    }  `}
                 >
                   <h2 className="text-4xl">{item.icon}</h2>
                   <h2 className="font-bold text-lg">{item.title}</h2>
@@ -161,6 +210,21 @@ function CreateTrip() {
         <div className="my-10 justify-center flex">
           <Button onClick={OnGenerateTrip}>Generate Trip</Button>
         </div>
+
+        <Dialog open={openDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogDescription>
+                <img src="/Logo.png" alt="" />
+                <h2 className="font-bold text-lg mt-7">Sign in With Google</h2>
+                <Button
+                onClick={login}
+                className="w-full mt-10 flex gap-4 items-center"> <FcGoogle className="h-7 w-7" />
+                Sign in With Google</Button>
+              </DialogDescription>
+            </DialogHeader>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
