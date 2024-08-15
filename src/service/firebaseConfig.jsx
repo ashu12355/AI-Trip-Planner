@@ -10,8 +10,8 @@ const firebaseConfig = {
   authDomain: "ai-trip-planner-318e4.firebaseapp.com",
   projectId: "ai-trip-planner-318e4",
   storageBucket: "ai-trip-planner-318e4.appspot.com",
-  messagingSenderId: 
-  appId: 
+  messagingSenderId: "390671732680",
+  appId: "1:390671732680:web:5e921cdc68e2dcf4c0fafd"
 };
 
 // Initialize Firebase
