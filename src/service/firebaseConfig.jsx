@@ -6,12 +6,12 @@ import {getFirestore} from "firebase/firestore"
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: 
+  apiKey: ,
   authDomain: "ai-trip-planner-318e4.firebaseapp.com",
   projectId: "ai-trip-planner-318e4",
   storageBucket: "ai-trip-planner-318e4.appspot.com",
   messagingSenderId: "390671732680",
-  appId: 
+  appId: "1:390671732680:web:5e921cdc68e2dcf4c0fafd"
 };
 
 // Initialize Firebase

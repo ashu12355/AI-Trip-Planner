@@ -12,7 +12,7 @@ function Hotels({ trip }) {
               <img src="/bg.jpg" alt="" className='rounded-lg'/>
               <div className='my-2 flex flex-col gap-2'>
                 <h2 className='font-medium'>{hotel.hotelName}</h2>
-                <h2 className='text-xs text-gray-500'> 📍 {hotel.hotelAddress}</h2>
+                <h2 className='text-xs text-gray-600'> 📍 {hotel.hotelAddress}</h2>
                 <h2 className='text-sm'>💰 : {hotel.price}</h2>
                 <h2>Rating ⭐ : {hotel.rating}</h2>
               </div>
